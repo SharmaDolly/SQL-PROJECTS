@@ -1,0 +1,68 @@
+# SQL-PROJECTS
+CREATE DATABASE MAKEMYTRIP;
+   USE MAKEMYTRIP;
+   -- Create Users Table
+   CREATE  TABLE User(
+   UserID INT PRIMARY KEY, 
+   UserName VARCHAR(50) NOT NULL,
+   Email VARCHAR(100) NOT NULL,
+   PhoneNumber VARCHAR(15),
+   CONSTRAINT UC_Email UNIQUE(Email));
+   -- CREATE HOTELS TABLE
+   CREATE TABLE Hotels(
+   HotelID INT PRIMARY KEY,
+   HotelName VARCHAR(100) NOT NULL,
+   Location VARCHAR(50) NOT NULL,
+   Rating DECIMAL(10,2),
+   CONSTRAINT UC_HotelName_Location UNIQUE(HotelName,Location));
+   -- CREATE BOOKINGS TABLE
+   CREATE TABLE Bookings(
+   BookingID INT PRIMARY KEY,
+   UserID INT,
+   HotelID INT,
+   CheckInDate DATE,
+   CheckOutDate DATE,
+   TotalAmount DECIMAL(10,2),
+   CONSTRAINT FK_Booking_User FOREIGN KEY(UserID) REFERENCES User(UserID),
+   CONSTRAINT FK_Booking_Hotel FOREIGN KEY(HotelID) REFERENCES Hotels(HotelID));
+   -- CREATE REVIEWS TABLE 
+   CREATE TABLE Reviews(
+   ReviewID INT PRIMARY KEY,
+   UserID INT,
+   HotelID INT,
+   Rating DECIMAL(3,2),
+   Comment TEXT,
+   CONSTRAINT FK_Review_User FOREIGN KEY(UserID) REFERENCES User(UserID),
+   CONSTRAINT FK_Review_Hotel FOREIGN KEY(HotelID) REFERENCES Hotels(HotelID));
+    
+    -- INSERT SAMPLE USERS
+    INSERT INTO User(UserID, UserName, Email, PhoneNumber) VALUES (1,'John Doe','john.doe@example.com','123-456-7890'), (2,'Jane Smith','jane.smith@example.com','987-654-3210');
+    -- INSERT SAMPLE HOTELS 
+    INSERT INTO Hotels(HotelID, HotelName, Location, Rating) VALUES ('101', 'LUXURY IN', 'CITY A', 4.5), ('102', 'COMFORT SERIES', 'CITY B', 3.8);
+    -- INSERT SAMPLE BOOKINGS 
+    INSERT INTO Bookings(BookingID, UserID, HotelID, CheckInDate, CheckOutDate, TotalAmount) VALUES (1001, 1, 101, '2023-06-15', '2023-06-21', 1200.00), (1002, 2, 102, '2023-07-07', '2023-07-15', 900.50);
+    -- INSERT SAMPLE REVIEWS 
+    INSERT INTO Reviews (ReviewID, UserID, HotelID, Rating, Comment) VALUES (501, 1, 101, 4.0, 'Great Experience'), (502, 2, 102, 3.5, 'Good Service but Room Cleanliness can be improved ');
+   
+   -- RETRIEVE ALL USERS 
+   SELECT * FROM User;
+   
+   -- REYRIEVE ALL HOTELS
+   SELECT * FROM Hotels;
+   
+   -- RETRIEVE BOOKINGS WITH USER AND HOTEL DETAILS
+   SELECT Bookings.BookingID, Bookings.CheckInDate, Bookings.CheckOutDate, User.UserName, Hotels.HotelName AS GUESTS, Hotels.Location AS PLACE
+   FROM 
+   Bookings LEFT JOIN 
+   User  ON Bookings.UserID = User.UserID
+   LEFT JOIN
+   Hotels ON Bookings.HotelID = Hotels.HotelID;
+   
+   
+   -- RETRIEVE REVIEWS WITH USER AND HOTEL DETAILS
+   SELECT Reviews.ReviewID, Reviews.Rating, Reviews.Comment, User.UserName AS REVIEWER, User.Email AS MAILID, Hotels.HotelName, Hotels.Location
+   FROM 
+   Reviews LEFT JOIN 
+   User ON Reviews.UserID = User.UserID 
+   LEFT JOIN
+   Hotels ON Reviews.HotelID = Hotels.HotelID;
